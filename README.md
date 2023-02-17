@@ -1,0 +1,1 @@
+An algorithm for exploiting pancakeswap smart contracts to predict binary options on pancakeswap mainnet
