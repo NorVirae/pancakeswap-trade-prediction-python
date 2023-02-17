@@ -14,10 +14,13 @@ with open("abi.json", 'r') as abiFile:
     data = abiFile.read()
 mainAbiFile = json.loads(data)
 
-print(mainAbiFile)
 # provider
 
 rpc_mainnet = "https://data-seed-prebsc-1-s1.binance.org:8545/"
+provider = Web3(Web3.HTTPProvider(rpc_mainnet))
 
-w3 = Web3(Web3.HTTPProvider(rpc_mainnet))
-print(w3)
+walletAddress = "walletAddrr"
+privateKey = "privateKey"
+# contract
+contract = provider.eth.contract(address = addressContract,abi = mainAbiFile)
+print(contract)
