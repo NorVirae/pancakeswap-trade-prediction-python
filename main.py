@@ -86,5 +86,17 @@ def look_to_trade():
         else:
             sendTx("bear")
 #
+def claim_winnings(epoch):
+    chainId = 56
+    gas = 300000
+    gas_price = Web3.toWei('5.5', "gwei")
+    nonce = provider.eth.getTransactionCount(walletAddress)
 
+    # build transaction
+    to_be_sent = contract.functions.claim(epoch).buildTransaction({
+        'chainId': chainId,
+        'gas': gas,
+        'gasPrice': gas_price,
+        'nonce': nonce
+    })
 look_to_trade()
