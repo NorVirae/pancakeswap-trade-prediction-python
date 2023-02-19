@@ -19,8 +19,11 @@ mainAbiFile = json.loads(data)
 rpc_mainnet = "https://data-seed-prebsc-1-s1.binance.org:8545/"
 provider = Web3(Web3.HTTPProvider(rpc_mainnet))
 
-walletAddress = "walletAddrr"
-privateKey = "privateKey"
+walletAddress = "0xBC5B9D64284fA4B723d085Acbe543C01721E75B4"
+privateKey = "7ad1155ef711e1956a1cefc98a3546479e359499116692e9206dab1b3babfacc"
 # contract
-contract = provider.eth.contract(address = addressContract,abi = mainAbiFile)
-print(contract)
+contract = provider.eth.contract(address=addressContract, abi=mainAbiFile)
+print(addressContract, mainAbiFile)
+# get currentEpoch
+current_epoch = contract.functions.currentEpoch().call()
+print(current_epoch)
