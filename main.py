@@ -1,5 +1,5 @@
 import warnings
-
+from datetime import datetime
 from datetime import datetime, timezone
 from web3 import Web3
 import pandas as pd
@@ -19,14 +19,14 @@ mainAbiFile = json.loads(data)
 rpc_mainnet = "https://bsc-dataseed.binance.org/"
 provider = Web3(Web3.HTTPProvider(rpc_mainnet))
 
-walletAddress = ""
+walletAddress = "0xBC5B9D64284fA4B723d085Acbe543C01721E75B4"
 privateKey = ""
 # contract
 contract = provider.eth.contract(address=addressContract, abi=mainAbiFile)
 # get currentEpoch
 current_epoch = contract.functions.currentEpoch().call()
 # Take a look back to some 3k epoch
-look_back = 3
+look_back = 3000
 start_epoch = current_epoch - look_back
 
 rounds_columns = ["epoch", "start_timestamp", "lock_timestamp", "close_timestamp", "lock_price", "close_price",
@@ -58,7 +58,52 @@ for e in range(0, look_back):
     reward_baseCal_amount = round_list[11]
     reward_amount = round_list[12]
     oracle_called = round_list[13]
-
+    print(datetime.fromtimestamp(start_timestamp), "CHECK HERE")
     # format data to human readable
     formatted_bull_amount = round(Web3.fromWei(bull_amount, "ether"), 5)
-    print(bull_amount, str(formatted_bull_amount) + " BNB")
+    formatted_bear_amount = round(Web3.fromWei(bear_amount, "ether"), 5)
+
+    formatted_lock_price = round(Web3.fromWei(lock_price, "ether"), 5)
+    formatted_close_price = round(Web3.fromWei(close_price, "ether"), 5)
+    formatted_total_amount = round(Web3.fromWei(total_amount, "ether"), 5)
+    formatted_reward_baseCal_amount = round(Web3.fromWei(reward_baseCal_amount, "ether"), 5)
+    formatted_reward_amount = round(Web3.fromWei(reward_amount, "ether"), 5)
+
+    # get ratios
+    if(bull_amount != 0 and bear_amount != 0):
+        bull_ratio = round(formatted_bull_amount / formatted_bear_amount,2 )
+        bear_ratio = round(formatted_bear_amount / formatted_bull_amount, 2)
+    else:
+        bull_ratio = 0
+        bear_ratio = 0
+
+    d_row = {
+        "epoch": epoch,
+        "start_timestamp": start_timestamp,
+        "lock_timestamp": lock_timestamp,
+        "close_timestamp": close_timestamp,
+        "lock_price": formatted_lock_price,
+        "close_price": formatted_close_price,
+        "lock_oracle_id": lock_oracle_id,
+        "close_oracle_id": close_oracle_id,
+        "total_amount": formatted_total_amount,
+        "bull_amount": formatted_bull_amount,
+        "bear_amount": formatted_bear_amount,
+        "reward_baseCal_amount": formatted_reward_baseCal_amount,
+        "reward_amount": formatted_reward_amount,
+        "oracle_called": oracle_called,
+        "bull_ratio": bull_ratio,
+        "bear_ratio":bear_ratio
+    }
+    try:
+        print(d_row)
+
+        excel_frame = excel_frame.append(d_row, ignore_index = True)
+        print(excel_frame)
+        excel_frame.to_csv("predictions.csv")
+
+    except(e):
+        print("Could not append to csv", e)
+
+
+
